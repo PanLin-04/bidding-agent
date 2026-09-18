@@ -2,6 +2,9 @@
 
 面向招投标采购场景的智能问答系统：以 **RAG 混合检索（Qdrant）+ 知识图谱（Neo4j）+ 结构化数据库（PostgreSQL）+ 联网搜索（Tavily/Exa）** 四路数据源为底座，由 **ReAct 多轮工具循环**的 Agent 编排回答，前端 **Next.js 14** 流式渲染（SSE）。
 
+> **当前状态**：**Agent + RAG 问答链路已可运行**——Excel → Qdrant（dense 512 维 bge-small-zh-v1.5 + jieba BM25 稀疏向量）→ 原生 RRF 混合检索 → 注册为 `search_knowledge_base` 工具 → **ReAct Agent 自动调用**（多轮、可并发多个查询）→ DeepSeek 生成 → SSE 流式 + 来源卡片；338 例 pytest 全绿。
+> 无 LLM 凭据 / provider 不支持工具调用时自动降级为返回知识库原文。知识图谱 / 结构化数据库 / 联网搜索尚未实现，见 `分配说明.md` 分工。
+
 ## 快速开始
 
 
@@ -40,52 +43,31 @@ cd frontend && npm install && npm run dev
 | `docs/组件工作机制.md`    | 20 个组件的 Mermaid 机制图解                |
 | `docs/增加Agent功能.md` | 二期可扩展功能清单与实施路线                      |
 
-## 仓库结构（骨架）
-
-
+## 仓库结构
 
 ```
-├── main.py                  # CLI 入口: ingest / api / dev
-
+├── main.py                  # CLI 入口: ingest / api / dev          ✅ 已实现
 ├── pyproject.toml           # 依赖声明（uv）
-
-├── conftest.py              # pytest 根配置（预置必需 env）
-
+├── conftest.py              # pytest 根配置（预置必需 env）          ✅
 ├── .github/workflows/ci.yml # push/PR 自动 uv sync + pytest
-
-├── api/server.py            # FastAPI 全部端点 + 限流 + lifespan
-
+├── api/server.py            # FastAPI 端点 + 限流 + SSE + 健康检查    ✅
 ├── src/
-
-│   ├── agent/               # Agent 编排（core/react\_loop/generation/tool\_defense/skills/prompts）
-
-│   ├── rag/                 # 混合检索（pipeline/vector\_store/embedder/ingest）
-
-│   ├── clients/             # LLM 客户端（deepseek/zhipu/openai\_compatible/vision）
-
-│   ├── tools/               # 工具定义与执行（base/rag\_tools）
-
-│   ├── database/            # Neo4j / PostgreSQL 客户端与导入
-
-│   ├── mcp/                 # Exa MCP 客户端
-
-│   └── ...                  # web\_search / config / rate\_limiter / http\_client 等
-
-├── frontend/                # Next.js 14 前端（SSE 流式渲染）
-
-├── tests/                   # pytest 131 例
-
-├── eval/                    # RAG / Agent 评测
-
-└── batch/                   # 数据处理脚本
+│   ├── rag/                 # 混合检索（pipeline/vector_store/embedder/ingest） ✅
+│   ├── agent/               # Agent 编排（core/react_loop/generation/tool_defense） ✅
+│   ├── tools/               # 工具定义与执行（base/rag_tools）          ✅
+│   ├── clients/             # LLM 客户端（base/deepseek/llm_factory）  ✅
+│   ├── config.py            # Settings + .env 校验                    ✅
+│   ├── rate_limiter.py      # 滑动窗口限流（30 次/60 秒）              ✅
+│   ├── logging_config.py    # 日志配置                                ✅
+│   ├── agent/skills.py      # 技能加载与匹配（_match_skills）           ⬜ 待实现
+│   ├── database/            # Neo4j / PostgreSQL 客户端与导入           ⬜ 待实现
+│   ├── mcp/                 # Exa MCP 客户端                          ⬜ 待实现
+│   └── web_search.py        # Tavily 客户端                           ⬜ 待实现
+├── frontend/                # Next.js 14 前端（SSE 流式渲染）          ✅
+├── tests/                   # pytest 338 例                          ✅
+├── eval/                    # retrieval_eval ✅ / ragas·agent·dashboard ⬜
+└── batch/                   # 数据处理脚本：去重 / 编JSONL / 排序 / 插标的物 / 交易频次 ✅ 5 个全部落地
 ```
 
-> 当前为团队协作起点（origin）。各模块代码由 5 人按 
->
-> `分配说明.md`
->
->  分工实现，通过 GitHub PR 合入 
->
-> `main`
->
-> 。
+> 各模块代码由 5 人按 `分配说明.md` 分工实现，通过 GitHub PR 合入 `main`。
+> 标 ⬜ 的模块属其余成员的分工范围，接口契约见 `docs/开发文档.md`。
