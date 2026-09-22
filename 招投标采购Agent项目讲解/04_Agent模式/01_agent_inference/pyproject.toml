@@ -1,0 +1,11 @@
+[project]
+name = "react"
+version = "0.1.0"
+description = "A ReAct pattern agent implementation"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+    "tavily-python>=0.3.0"
+]
