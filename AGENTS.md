@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 ## ⚠️ 当前状态：开发中（先读这条）
 
@@ -10,14 +10,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - 文档里的文件路径、函数名、端点**不代表可以在磁盘上读到**；改代码前先 `ls` 确认，不要假设。
 - 前端 Chat 全链路（SSE 流式、provider 切换、联网/深度思考开关、会话持久化与列表、点赞/点踩、停止）已接通后端；Dashboard/extract/price/material/analysis 四页仍为 mock。
-- **CI 是绿的**：`uv run pytest -q`（584 例）全绿；前端 `npm run build`（tsc 无错）+ `vitest run` 通过。
+- **CI 是绿的**：`uv run pytest -q`（561 例）全绿；前端 `npm run build`（tsc 无错）+ `vitest run` 通过。
 - 你的任务如果是"实现某模块"，文档已经把契约、验收标准和文件清单写好了——照做即可，不要另起炉灶。
 
 ## 仓库布局
 
 ```
 C:\Users\10518\bidding-agent\
-├── CLAUDE.md                    # ← 本文件
+├── AGENTS.md                    # ← 本文件
 ├── bidding-agent/               # ★ 真正的项目（5 人协作，代码将在这里落地）
 │   ├── README.md                # 面向使用者：功能概览、快速开始
 │   ├── 分配说明.md               # 面向团队：5 人分工、Git 流程、阶段排期（协作唯一入口）
@@ -35,7 +35,7 @@ C:\Users\10518\bidding-agent\
 **两个易踩的坑**：
 
 1. `招投标采购Agent项目讲解/03_项目参考/` 是 `bidding-agent/docs/` 的副本快照，内容相同但**会随时间分叉**。改文档改 `bidding-agent/docs/`，不要改副本。
-2. `招投标采购Agent项目讲解/04_Agent模式/01_agent_inference/` 是一个**完全独立的**教学小仓库（8 个自包含的 Agent 模式单文件），有自己的 `CLAUDE.md`、`pyproject.toml`、`uv.lock`。它与招投标 Agent 项目**无任何 import 或依赖关系**，改动时不要跨目录复制代码。
+2. `招投标采购Agent项目讲解/04_Agent模式/01_agent_inference/` 是一个**完全独立的**教学小仓库（8 个自包含的 Agent 模式单文件），有自己的 `AGENTS.md`、`pyproject.toml`、`uv.lock`。它与招投标 Agent 项目**无任何 import 或依赖关系**，改动时不要跨目录复制代码。
 
 ## 常用命令
 
